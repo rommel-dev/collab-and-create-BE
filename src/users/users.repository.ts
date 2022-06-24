@@ -26,7 +26,7 @@ export class UsersRepository {
     return await this.userModel.findById(id);
   }
 
-  async updateUser(input: UpdateUserInput): Promise<User> {
+  async updateUser(input: CreateUserInput): Promise<User> {
     return await this.userModel.findOneAndUpdate(
       { email: input.email },
       { ...input },

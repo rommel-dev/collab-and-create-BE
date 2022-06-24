@@ -7,6 +7,7 @@ type User {
   email: String!
   name: String!
   password: String!
+  code: String!
   image: String
 }
 
@@ -21,8 +22,9 @@ input FindUserInput {
 }
 
 type Mutation {
-  register(input: SignupInput!): User!
-  login(input: SigninInput!): String!
+  signup(input: SignupInput!): User!
+  signin(input: SigninInput!): String!
+  forgotPassword(input: ForgotPasswordInput!): Boolean!
 }
 
 input SignupInput {
@@ -35,4 +37,10 @@ input SignupInput {
 input SigninInput {
   email: String!
   password: String!
+}
+
+input ForgotPasswordInput {
+  email: String!
+  code: String
+  password: String
 }

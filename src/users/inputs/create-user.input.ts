@@ -9,7 +9,10 @@ export class CreateUserInput {
   name?: string;
 
   @Field()
-  password: string;
+  password?: string;
+
+  @Field()
+  code?: string;
 
   @Field({ nullable: true })
   image?: string;

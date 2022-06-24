@@ -20,6 +20,10 @@ export class User {
   @Prop()
   password: string;
 
+  @Field()
+  @Prop()
+  code: string;
+
   @Field({ nullable: true })
   @Prop()
   image?: string;
