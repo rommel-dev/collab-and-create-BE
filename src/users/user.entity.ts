@@ -1,12 +1,12 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Field, ObjectType } from '@nestjs/graphql';
-import { Document } from 'mongoose';
+import { Document, Schema as MongooseSchema } from 'mongoose';
 
 @ObjectType()
-@Schema()
+@Schema({ timestamps: true })
 export class User {
   @Field(() => String)
-  _id: string;
+  _id: MongooseSchema.Types.ObjectId;
 
   @Field()
   @Prop()
@@ -27,6 +27,14 @@ export class User {
   @Field({ nullable: true })
   @Prop()
   image?: string;
+
+  @Field(() => Date, { description: 'Created At' })
+  @Prop()
+  createdAt?: Date;
+
+  @Field(() => Date, { description: 'Updated At' })
+  @Prop()
+  updatedAt?: Date;
 }
 
 export type UserDocument = User & Document;

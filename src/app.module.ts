@@ -1,11 +1,15 @@
 import { Module } from '@nestjs/common';
-import { UsersModule } from './users/users.module';
-import { AuthenticationModule } from './authentication/authentication.module';
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { GraphQLModule } from '@nestjs/graphql';
 import { join } from 'path';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
+import { MailModule } from './mail/mail.module';
+import { UsersModule } from './users/users.module';
+import { AuthenticationModule } from './authentication/authentication.module';
+import { ProjectsModule } from './projects/projects.module';
+import { TaskColumnsModule } from './task-columns/task-columns.module';
+import { TasksModule } from './tasks/tasks.module';
 
 @Module({
   imports: [
@@ -30,6 +34,10 @@ import { MongooseModule } from '@nestjs/mongoose';
     }),
     UsersModule,
     AuthenticationModule,
+    MailModule,
+    ProjectsModule,
+    TaskColumnsModule,
+    TasksModule,
   ],
   controllers: [],
   providers: [],

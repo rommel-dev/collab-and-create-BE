@@ -8,12 +8,14 @@ import * as bcrypt from 'bcrypt';
 import { AuthenticationService } from 'src/authentication/authentication.service';
 import { AuthenticationError, UserInputError } from 'apollo-server-express';
 import { ForgotPasswordInput } from './inputs/forgot-password.input';
+import { MailService } from 'src/mail/mail.service';
 
 @Injectable()
 export class UsersService {
   constructor(
     private readonly userRepository: UsersRepository,
     private readonly authenticationService: AuthenticationService,
+    private readonly mailService: MailService,
   ) {}
 
   async signup(input: SignupInput) {
@@ -84,10 +86,10 @@ export class UsersService {
           code: verificationCode.toString(),
         });
 
-        //TODO: Create Mailer Module
-        // if (result) {
-        //   mailer(result.email, result.name, result.verificationCode);
-        // }
+        await this.mailService.sendMail(
+          { code: verificationCode.toString() },
+          user,
+        );
 
         return true;
       }
@@ -108,6 +110,7 @@ export class UsersService {
   async saveUser(input: CreateUserInput) {
     try {
       const res = await this.userRepository.saveUser(input);
+      console.log(res);
       return res;
     } catch (err) {
       console.error(err);

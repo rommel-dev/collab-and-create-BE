@@ -31,11 +31,12 @@ export class UsersResolver {
   }
 
   @Query((returns) => User)
-  @UseGuards(JwtAuthGuard)
+  // @UseGuards(JwtAuthGuard)
   async findUser(
     @Args('input') input: FindUserInput,
     @CurrentUser() user: User,
   ) {
+    console.log(input);
     return this.userService.findUser(input);
   }
 }

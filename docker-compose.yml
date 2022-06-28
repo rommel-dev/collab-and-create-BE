@@ -4,7 +4,7 @@ services:
     image: 'redis:alpine'
     ports:
       - 6379:6379
-    restart: always
+    # restart: always
     volumes:
       - ./myredis/redis.conf:/usr/local/etc/redis/redis.conf
       - ./myredis/data:/var/lib/redis
@@ -14,7 +14,7 @@ services:
 
   mongodb:
     image: mongo
-    restart: always
+    # restart: always
     ports:
       - 27017:27017
     volumes:
