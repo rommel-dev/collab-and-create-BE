@@ -15,7 +15,7 @@ export class CreateUserInput {
   code?: string;
 
   @Field({ nullable: true })
-  image?: string;
+  photo?: string;
 }
 
 @InputType()

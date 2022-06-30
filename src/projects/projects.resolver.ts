@@ -29,7 +29,13 @@ export class ProjectsResolver {
 
   @Query((returns) => [Project])
   @UseGuards(JwtAuthGuard)
-  async projects(@CurrentUser() user: User) {
+  async projectsByUser(@CurrentUser() user: User) {
+    return this.projectsService.projectsByUser(user);
+  }
+
+  @Query((returns) => [Project])
+  @UseGuards(JwtAuthGuard)
+  async unconfirmProjectInvites(@CurrentUser() user: User) {
     return this.projectsService.projectsByUser(user);
   }
 

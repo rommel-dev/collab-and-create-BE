@@ -8,13 +8,17 @@ import { SendMailInput } from './inputs/send-mail.input';
 export class MailService {
   constructor(private mailerService: MailerService) {}
 
-  async sendMail(input: SendMailInput, user: User) {
-    console.log(input, user);
+  async sendMail(
+    input: SendMailInput,
+    user: Partial<User>,
+    template: string,
+    subject: string,
+  ) {
     const response = await this.mailerService.sendMail({
       to: user.email,
       from: 'Collab&Create Help Service <collab.and.create@gmail.com>', // override default from
-      subject: 'Forgot Password',
-      template: 'test',
+      subject,
+      template,
       context: {
         name: user.name,
         code: input.code,

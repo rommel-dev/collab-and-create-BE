@@ -15,15 +15,22 @@ export class ProjectsRepository {
     return this.projectModel.findById(_id).exec();
   }
 
-  async find(user: User) {
+  async findProjectsByUser(user: User) {
     return await this.projectModel.find({
       confirmedMembers: { $in: [user._id] },
+    });
+  }
+
+  async findUnconfirmProjects(user: User) {
+    return await this.projectModel.find({
+      unconfirmedMembers: { $in: [user._id] },
     });
   }
 
   async save(input: CreateProjectInput, user: User) {
     const newProject = new this.projectModel({
       ...input,
+      status: 'ongoing',
       confirmedMembers: [user._id],
       createdBy: user._id,
     });

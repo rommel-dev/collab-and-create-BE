@@ -1,9 +1,10 @@
 import { UseGuards } from '@nestjs/common';
 import { Args, Query, Resolver } from '@nestjs/graphql';
 import { JwtAuthGuard } from 'src/authentication/jwt-auth.guard';
+import { Task } from './task.entity';
 import { TasksService } from './tasks.service';
 
-@Resolver()
+@Resolver(() => Task)
 export class TasksResolver {
   constructor(private readonly tasksService: TasksService) {}
 

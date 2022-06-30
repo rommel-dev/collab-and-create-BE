@@ -1,9 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Field, ObjectType } from '@nestjs/graphql';
-import mongoose, { Document, Schema as MongooseSchema } from 'mongoose';
+import { Document, Schema as MongooseSchema } from 'mongoose';
 import { User } from 'src/users/user.entity';
-import { Project } from 'src/projects/project.entity';
-import { TaskColumn } from 'src/task-columns/task-column.entity';
 
 @ObjectType()
 @Schema({ timestamps: true })
@@ -15,37 +13,21 @@ export class Task {
   @Prop()
   description: string;
 
-  @Field((type) => User)
-  @Prop({
-    type: { type: mongoose.Schema.Types.ObjectId, ref: User.name },
-  })
-  createdBy: User;
+  @Field(() => User)
+  @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'User' })
+  createdBy: MongooseSchema.Types.ObjectId | User;
 
-  // @Field((type) => TaskColumn)
-  // @Prop({
-  //   type: { type: mongoose.Schema.Types.ObjectId, ref: TaskColumn.name },
-  // })
-  // taskColumn: TaskColumn;
-
-  // @Field((type) => Project)
-  // @Prop({
-  //   type: { type: mongoose.Schema.Types.ObjectId, ref: Project.name },
-  // })
-  // project: Project;
-
-  @Field((type) => [User])
-  @Prop({
-    type: [{ type: mongoose.Schema.Types.ObjectId, ref: User.name }],
-  })
-  inCharge: User[];
+  @Field(() => [User])
+  @Prop({ type: [MongooseSchema.Types.ObjectId], ref: 'User' })
+  inCharge: [MongooseSchema.Types.ObjectId] | User[];
 
   @Field(() => Date, { description: 'Created At' })
   @Prop()
-  createdAt?: Date;
+  createdAt: Date;
 
   @Field(() => Date, { description: 'Updated At' })
   @Prop()
-  updatedAt?: Date;
+  updatedAt: Date;
 }
 
 export type TaskDocument = Task & Document;

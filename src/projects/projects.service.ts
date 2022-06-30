@@ -4,6 +4,7 @@ import { CreateProjectInput } from './inputs/create-project.input';
 import { Project } from './project.entity';
 import { ProjectsRepository } from './projects.repository';
 import { Schema as MongooseSchema } from 'mongoose';
+import { FindProjectsInput } from './inputs/find-projects.input';
 
 @Injectable()
 export class ProjectsService {
@@ -15,7 +16,21 @@ export class ProjectsService {
 
   async projectsByUser(user: User) {
     try {
-      const projects = await this.projectsRepository.find(user);
+      const projects = await this.projectsRepository.findProjectsByUser(user);
+      if (!projects) {
+        throw new Error(`No projects found`);
+      }
+      return projects;
+    } catch (err) {
+      throw new Error(err);
+    }
+  }
+
+  async findUnconfirmProjects(user: User) {
+    try {
+      const projects = await this.projectsRepository.findUnconfirmProjects(
+        user,
+      );
       if (!projects) {
         throw new Error(`No projects found`);
       }
@@ -27,7 +42,7 @@ export class ProjectsService {
 
   async createProject(input: CreateProjectInput, user: User) {
     try {
-      const projects = await this.projectsRepository.find(user);
+      const projects = await this.projectsRepository.findProjectsByUser(user);
       const findProject = projects.find(
         (project: Project) => project.projectName === input.projectName,
       );

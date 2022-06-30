@@ -1,6 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Field, ObjectType } from '@nestjs/graphql';
-import mongoose, { Document, Schema as MongooseSchema } from 'mongoose';
+import { Document, Schema as MongooseSchema } from 'mongoose';
 import { User } from 'src/users/user.entity';
 import { TaskColumn } from 'src/task-columns/task-column.entity';
 
@@ -27,19 +27,19 @@ export class Project {
   techStacks: string[];
 
   @Field(() => User)
-  @Prop({ type: MongooseSchema.Types.ObjectId, ref: User.name })
+  @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'User' })
   createdBy: MongooseSchema.Types.ObjectId | User;
 
   @Field(() => [User])
-  @Prop({ type: [MongooseSchema.Types.ObjectId], ref: User.name })
+  @Prop({ type: [MongooseSchema.Types.ObjectId], ref: 'User' })
   unconfirmedMembers: [MongooseSchema.Types.ObjectId] | User[];
 
   @Field(() => [User])
-  @Prop({ type: [MongooseSchema.Types.ObjectId], ref: User.name })
+  @Prop({ type: [MongooseSchema.Types.ObjectId], ref: 'User' })
   confirmedMembers: [MongooseSchema.Types.ObjectId] | User[];
 
   @Field(() => [User])
-  @Prop({ type: [MongooseSchema.Types.ObjectId], ref: User.name })
+  @Prop({ type: [MongooseSchema.Types.ObjectId], ref: 'User' })
   rejectedInviteMembers: [MongooseSchema.Types.ObjectId] | User[];
 
   @Field(() => [TaskColumn])
@@ -55,11 +55,11 @@ export class Project {
 
   @Field(() => Date, { description: 'Created At' })
   @Prop()
-  createdAt?: Date;
+  createdAt: Date;
 
   @Field(() => Date, { description: 'Updated At' })
   @Prop()
-  updatedAt?: Date;
+  updatedAt: Date;
 }
 
 export type ProjectDocument = Project & Document;

@@ -9,6 +9,9 @@ import { AuthenticationService } from 'src/authentication/authentication.service
 import { AuthenticationError, UserInputError } from 'apollo-server-express';
 import { ForgotPasswordInput } from './inputs/forgot-password.input';
 import { MailService } from 'src/mail/mail.service';
+import { User } from './user.entity';
+import { Schema as MongooseSchema } from 'mongoose';
+import { FindUsersInput } from './inputs/find-users.input';
 
 @Injectable()
 export class UsersService {
@@ -26,8 +29,19 @@ export class UsersService {
       if (isUser) {
         throw new UserInputError('Email already exists');
       } else {
+        const code = Math.floor(Math.random() * 8999 + 1000);
         input.password = await bcrypt.hash(input.password, 10).then((r) => r);
-        return await this.saveUser(input);
+        await this.mailService.sendMail(
+          { code: code.toString() },
+          { email: input.email, name: input.email },
+          'verify-email',
+          'Email Verification',
+        );
+        return await this.saveUser({
+          ...input,
+          photo:
+            'https://res.cloudinary.com/rommel/image/upload/v1601204560/tk58aebfctjwz7t74qya.jpg',
+        });
       }
     } catch (err) {
       throw new UserInputError(err);
@@ -79,22 +93,33 @@ export class UsersService {
 
         return true;
       } else {
-        const verificationCode = Math.floor(Math.random() * 8999 + 1000);
+        const code = Math.floor(Math.random() * 8999 + 1000);
 
         await this.userRepository.updateUser({
           email: user.email,
-          code: verificationCode.toString(),
+          code: code.toString(),
         });
 
         await this.mailService.sendMail(
-          { code: verificationCode.toString() },
+          { code: code.toString() },
           user,
+          'reset-password',
+          'Forgot Password',
         );
 
         return true;
       }
     } catch (err) {
       throw new UserInputError(err);
+    }
+  }
+
+  async saveUser(input: CreateUserInput) {
+    try {
+      const res = await this.userRepository.saveUser(input);
+      return res;
+    } catch (err) {
+      console.error(err);
     }
   }
 
@@ -107,10 +132,18 @@ export class UsersService {
     }
   }
 
-  async saveUser(input: CreateUserInput) {
+  async myInfo(_id: string) {
     try {
-      const res = await this.userRepository.saveUser(input);
-      console.log(res);
+      const res = await this.userRepository.findUser({ _id });
+      return res;
+    } catch (err) {
+      console.error(err);
+    }
+  }
+
+  async findUsers(input: FindUsersInput) {
+    try {
+      const res = await this.userRepository.findUsers(input);
       return res;
     } catch (err) {
       console.error(err);

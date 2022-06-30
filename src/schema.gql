@@ -2,26 +2,6 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
-type User {
-  _id: String!
-  email: String!
-  name: String!
-  password: String!
-  code: String!
-  image: String
-
-  """Created At"""
-  createdAt: DateTime!
-
-  """Updated At"""
-  updatedAt: DateTime!
-}
-
-"""
-A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
-"""
-scalar DateTime
-
 type Task {
   _id: String!
   description: String!
@@ -34,6 +14,11 @@ type Task {
   """Updated At"""
   updatedAt: DateTime!
 }
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
 
 type TaskColumn {
   _id: String!
@@ -68,18 +53,61 @@ type Project {
   updatedAt: DateTime!
 }
 
+type Team {
+  _id: String!
+  teamName: String!
+  members: [User!]!
+  createdBy: User!
+  projects: [Project!]!
+
+  """Created At"""
+  createdAt: DateTime!
+
+  """Updated At"""
+  updatedAt: DateTime!
+}
+
+type User {
+  _id: String!
+  email: String!
+  name: String!
+  password: String!
+  code: String!
+  photo: String
+  skills: [String!]
+  portfolio: String
+  verified: Boolean!
+  colleagues: [User!]!
+  myPendingInvitesRequest: [User!]!
+  myPendingInvitesRespond: [User!]!
+  verifiedTeams: [Team!]!
+  unverifiedTeams: [Team!]!
+
+  """Created At"""
+  createdAt: DateTime!
+
+  """Updated At"""
+  updatedAt: DateTime!
+}
+
 type Query {
   findUser(input: FindUserInput!): User!
+  myInfo: User!
+  findUsers(input: FindUsersInput!): [User!]!
   project(_id: String!): Project!
-  projects: [Project!]!
+  projectsByUser: [Project!]!
+  unconfirmProjectInvites: [Project!]!
   taskColumnsByProject(input: String!): String!
   tasksByColumn(input: String!): String!
 }
 
 input FindUserInput {
-  id: String
+  _id: String
   email: String
-  name: String
+}
+
+input FindUsersInput {
+  _ids: [String!]
 }
 
 type Mutation {
@@ -93,7 +121,7 @@ input SignupInput {
   email: String!
   name: String!
   password: String!
-  image: String
+  photo: String
 }
 
 input SigninInput {

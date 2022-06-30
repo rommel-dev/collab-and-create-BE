@@ -9,8 +9,10 @@ import { SigninInput } from './inputs/signin.input';
 import { SignupInput } from './inputs/signup.input';
 import { User } from './user.entity';
 import { UsersService } from './users.service';
+import { Schema as MongooseSchema } from 'mongoose';
+import { FindUsersInput } from './inputs/find-users.input';
 
-@Resolver()
+@Resolver(() => User)
 export class UsersResolver {
   constructor(private readonly userService: UsersService) {}
 
@@ -26,17 +28,24 @@ export class UsersResolver {
 
   @Mutation(() => Boolean)
   async forgotPassword(@Args('input') input: ForgotPasswordInput) {
-    console.log(input);
     return await this.userService.forgotPassword(input);
   }
 
-  @Query((returns) => User)
-  // @UseGuards(JwtAuthGuard)
-  async findUser(
-    @Args('input') input: FindUserInput,
-    @CurrentUser() user: User,
-  ) {
-    console.log(input);
+  @Query(() => User)
+  @UseGuards(JwtAuthGuard)
+  async findUser(@Args('input') input: FindUserInput) {
     return this.userService.findUser(input);
+  }
+
+  @Query(() => User)
+  @UseGuards(JwtAuthGuard)
+  async myInfo(@CurrentUser() user: User) {
+    return this.userService.myInfo(user._id);
+  }
+
+  @Query(() => [User])
+  @UseGuards(JwtAuthGuard)
+  async findUsers(@Args('input') input: FindUsersInput) {
+    return this.userService.findUsers(input);
   }
 }

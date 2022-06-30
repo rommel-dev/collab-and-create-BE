@@ -10,6 +10,7 @@ import { AuthenticationModule } from './authentication/authentication.module';
 import { ProjectsModule } from './projects/projects.module';
 import { TaskColumnsModule } from './task-columns/task-columns.module';
 import { TasksModule } from './tasks/tasks.module';
+import { TeamModule } from './team/team.module';
 
 @Module({
   imports: [
@@ -38,6 +39,7 @@ import { TasksModule } from './tasks/tasks.module';
     ProjectsModule,
     TaskColumnsModule,
     TasksModule,
+    TeamModule,
   ],
   controllers: [],
   providers: [],

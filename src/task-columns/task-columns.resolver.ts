@@ -6,7 +6,7 @@ import { User } from 'src/users/user.entity';
 import { TaskColumn } from './task-column.entity';
 import { TaskColumnsService } from './task-columns.service';
 
-@Resolver()
+@Resolver(() => TaskColumn)
 export class TaskColumnsResolver {
   constructor(private readonly taskColumnsService: TaskColumnsService) {}
 

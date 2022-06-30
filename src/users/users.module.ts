@@ -11,7 +11,7 @@ import { UsersService } from './users.service';
   imports: [
     AuthenticationModule,
     MailModule,
-    MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
+    MongooseModule.forFeature([{ name: 'User', schema: UserSchema }]),
   ],
   providers: [UsersResolver, UsersService, UsersRepository],
 })

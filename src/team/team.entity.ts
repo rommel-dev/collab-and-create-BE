@@ -2,29 +2,29 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Field, ObjectType } from '@nestjs/graphql';
 import { Document, Schema as MongooseSchema } from 'mongoose';
 import { User } from 'src/users/user.entity';
-import { Task } from 'src/tasks/task.entity';
+import { Project } from 'src/projects/project.entity';
 
 @ObjectType()
 @Schema({ timestamps: true })
-export class TaskColumn {
+export class Team {
   @Field(() => String)
   _id: MongooseSchema.Types.ObjectId;
 
   @Field()
   @Prop()
-  columnName: string;
+  teamName: string;
 
-  @Field(() => Number)
-  @Prop()
-  sequence: number;
+  @Field(() => [User])
+  @Prop({ type: [MongooseSchema.Types.ObjectId], ref: 'User' })
+  members: [MongooseSchema.Types.ObjectId] | User[];
 
   @Field(() => User)
   @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'User' })
   createdBy: MongooseSchema.Types.ObjectId | User;
 
-  @Field(() => [Task])
-  @Prop({ type: [MongooseSchema.Types.ObjectId], ref: Task.name })
-  tasks: [MongooseSchema.Types.ObjectId] | Task[];
+  @Field(() => [Project])
+  @Prop({ type: [MongooseSchema.Types.ObjectId], ref: Project.name })
+  projects: [MongooseSchema.Types.ObjectId] | Project[];
 
   @Field(() => Date, { description: 'Created At' })
   @Prop()
@@ -35,5 +35,5 @@ export class TaskColumn {
   updatedAt: Date;
 }
 
-export type TaskColumnDocument = TaskColumn & Document;
-export const TaskColumnSchema = SchemaFactory.createForClass(TaskColumn);
+export type TeamDocument = Team & Document;
+export const TeamSchema = SchemaFactory.createForClass(Team);

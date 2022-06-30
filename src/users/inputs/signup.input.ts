@@ -12,5 +12,5 @@ export class SignupInput {
   password: string;
 
   @Field({ nullable: true })
-  image?: string;
+  photo?: string;
 }
