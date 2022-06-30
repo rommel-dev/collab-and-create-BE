@@ -9,34 +9,28 @@ import {
 } from '@nestjs/graphql';
 import { JwtAuthGuard } from 'src/authentication/jwt-auth.guard';
 import { CurrentUser } from 'src/authentication/user.decorator';
-import { User, UserDocument } from 'src/users/user.entity';
+import { User } from 'src/users/user.entity';
 import { CreateProjectInput } from './inputs/create-project.input';
 import { Project, ProjectDocument } from './project.entity';
 import { ProjectsService } from './projects.service';
-import { Schema as MongooseSchema } from 'mongoose';
+import { ObjectId } from 'mongoose';
+import { EditProjectInput } from './inputs/edit-project.input';
+import { TaskColumn } from 'src/task-columns/task-column.entity';
 
 @Resolver(() => Project)
 export class ProjectsResolver {
   constructor(private readonly projectsService: ProjectsService) {}
 
-  @Query((returns) => Project)
+  @Query(() => Project)
   @UseGuards(JwtAuthGuard)
-  async project(
-    @Args('_id', { type: () => String }) _id: MongooseSchema.Types.ObjectId,
-  ) {
+  async getProject(@Args('_id', { type: () => String }) _id: ObjectId) {
     return this.projectsService.projectById(_id);
   }
 
-  @Query((returns) => [Project])
+  @Query(() => [Project])
   @UseGuards(JwtAuthGuard)
-  async projectsByUser(@CurrentUser() user: User) {
-    return this.projectsService.projectsByUser(user);
-  }
-
-  @Query((returns) => [Project])
-  @UseGuards(JwtAuthGuard)
-  async unconfirmProjectInvites(@CurrentUser() user: User) {
-    return this.projectsService.projectsByUser(user);
+  async getProjects(@CurrentUser() user: User) {
+    return this.projectsService.getProjects(user);
   }
 
   @Mutation(() => Project)
@@ -46,6 +40,26 @@ export class ProjectsResolver {
     @CurrentUser() user: User,
   ) {
     return await this.projectsService.createProject(input, user);
+  }
+
+  @Mutation(() => Project)
+  @UseGuards(JwtAuthGuard)
+  async inviteResponse(
+    @Args('input') input: EditProjectInput,
+    @CurrentUser() user: User,
+  ) {
+    return await this.projectsService.editProject(input, user);
+  }
+
+  @ResolveField()
+  async createdBy(
+    @Parent() project: ProjectDocument,
+    @Args('populate') populate: boolean,
+  ) {
+    if (populate)
+      await project.populate({ path: 'createdBy', model: User.name });
+
+    return project.createdBy;
   }
 
   @ResolveField()
@@ -60,13 +74,24 @@ export class ProjectsResolver {
   }
 
   @ResolveField()
-  async createdBy(
+  async unconfirmedMembers(
     @Parent() project: ProjectDocument,
     @Args('populate') populate: boolean,
   ) {
     if (populate)
-      await project.populate({ path: 'createdBy', model: User.name });
+      await project.populate({ path: 'unconfirmedMembers', model: User.name });
 
-    return project.createdBy;
+    return project.unconfirmedMembers;
+  }
+
+  @ResolveField()
+  async taskColumns(
+    @Parent() project: ProjectDocument,
+    @Args('populate') populate: boolean,
+  ) {
+    if (populate)
+      await project.populate({ path: 'taskColumns', model: TaskColumn.name });
+
+    return project.taskColumns;
   }
 }

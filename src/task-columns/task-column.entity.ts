@@ -1,6 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Field, ObjectType } from '@nestjs/graphql';
-import { Document, Schema as MongooseSchema } from 'mongoose';
+import { Document, Schema as MongooseSchema, ObjectId } from 'mongoose';
 import { User } from 'src/users/user.entity';
 import { Task } from 'src/tasks/task.entity';
 
@@ -8,7 +8,7 @@ import { Task } from 'src/tasks/task.entity';
 @Schema({ timestamps: true })
 export class TaskColumn {
   @Field(() => String)
-  _id: MongooseSchema.Types.ObjectId;
+  _id: ObjectId;
 
   @Field()
   @Prop()
@@ -20,11 +20,11 @@ export class TaskColumn {
 
   @Field(() => User)
   @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'User' })
-  createdBy: MongooseSchema.Types.ObjectId | User;
+  createdBy: ObjectId | User;
 
   @Field(() => [Task])
   @Prop({ type: [MongooseSchema.Types.ObjectId], ref: Task.name })
-  tasks: [MongooseSchema.Types.ObjectId] | Task[];
+  tasks: [ObjectId] | Task[];
 
   @Field(() => Date, { description: 'Created At' })
   @Prop()

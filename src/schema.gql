@@ -5,7 +5,7 @@
 type Task {
   _id: String!
   description: String!
-  createdBy: User!
+  createdBy(populate: Boolean!): User!
   inCharge: [User!]!
 
   """Created At"""
@@ -24,7 +24,7 @@ type TaskColumn {
   _id: String!
   columnName: String!
   sequence: Float!
-  createdBy: User!
+  createdBy(populate: Boolean!): User!
   tasks: [Task!]!
 
   """Created At"""
@@ -41,10 +41,10 @@ type Project {
   status: String!
   techStacks: [String!]!
   createdBy(populate: Boolean!): User!
-  unconfirmedMembers: [User!]!
+  unconfirmedMembers(populate: Boolean!): [User!]!
   confirmedMembers(populate: Boolean!): [User!]!
   rejectedInviteMembers: [User!]!
-  taskColumns: [TaskColumn!]!
+  taskColumns(populate: Boolean!): [TaskColumn!]!
 
   """Created At"""
   createdAt: DateTime!
@@ -94,11 +94,12 @@ type Query {
   findUser(input: FindUserInput!): User!
   myInfo: User!
   findUsers(input: FindUsersInput!): [User!]!
-  project(_id: String!): Project!
-  projectsByUser: [Project!]!
-  unconfirmProjectInvites: [Project!]!
-  taskColumnsByProject(input: String!): String!
-  tasksByColumn(input: String!): String!
+  getProject(_id: String!): Project!
+  getProjects: [Project!]!
+  getTaskColumn(_id: String!): TaskColumn!
+  getTaskColumns(input: FindTaskColumnsInput!): [TaskColumn!]!
+  getTask(_id: String!): Task!
+  getTasks(input: FindTasksInput!): [Task!]!
 }
 
 input FindUserInput {
@@ -110,11 +111,26 @@ input FindUsersInput {
   _ids: [String!]
 }
 
+input FindTaskColumnsInput {
+  _ids: [String!]
+  projectId: String
+}
+
+input FindTasksInput {
+  _ids: [String!]
+  taskColumnId: String
+}
+
 type Mutation {
   signup(input: SignupInput!): User!
   signin(input: SigninInput!): String!
   forgotPassword(input: ForgotPasswordInput!): Boolean!
   createProject(input: CreateProjectInput!): Project!
+  inviteResponse(input: EditProjectInput!): Project!
+  createTaskColumn(input: CreateTaskColumnInput!): TaskColumn!
+  editTaskColumn(input: EditTaskColumnInput!): TaskColumn!
+  createTask(input: CreateTaskInput!): Task!
+  editTask(input: EditTaskInput!): Task!
 }
 
 input SignupInput {
@@ -140,4 +156,33 @@ input CreateProjectInput {
   description: String
   techStacks: [String!]
   unconfirmMembers: [String!]
+}
+
+input EditProjectInput {
+  _id: String!
+  inviteAction: String
+  taskColumns: [String!]
+}
+
+input CreateTaskColumnInput {
+  columnName: String!
+  projectId: String
+  sequence: Float
+}
+
+input EditTaskColumnInput {
+  _id: String!
+  columnName: String
+  sequence: Float
+  tasks: [String!]
+}
+
+input CreateTaskInput {
+  description: String!
+  taskColumnId: String
+}
+
+input EditTaskInput {
+  _id: String!
+  description: String
 }

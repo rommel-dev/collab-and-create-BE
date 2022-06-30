@@ -10,7 +10,7 @@ import { AuthenticationError, UserInputError } from 'apollo-server-express';
 import { ForgotPasswordInput } from './inputs/forgot-password.input';
 import { MailService } from 'src/mail/mail.service';
 import { User } from './user.entity';
-import { Schema as MongooseSchema } from 'mongoose';
+import { Schema as MongooseSchema, ObjectId } from 'mongoose';
 import { FindUsersInput } from './inputs/find-users.input';
 
 @Injectable()
@@ -132,7 +132,7 @@ export class UsersService {
     }
   }
 
-  async myInfo(_id: string) {
+  async myInfo(_id: ObjectId) {
     try {
       const res = await this.userRepository.findUser({ _id });
       return res;

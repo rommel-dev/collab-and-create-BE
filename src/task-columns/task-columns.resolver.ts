@@ -1,19 +1,60 @@
 import { UseGuards } from '@nestjs/common';
-import { Args, Query, Resolver } from '@nestjs/graphql';
+import {
+  Args,
+  Mutation,
+  Parent,
+  Query,
+  ResolveField,
+  Resolver,
+} from '@nestjs/graphql';
 import { JwtAuthGuard } from 'src/authentication/jwt-auth.guard';
 import { CurrentUser } from 'src/authentication/user.decorator';
 import { User } from 'src/users/user.entity';
-import { TaskColumn } from './task-column.entity';
+import { TaskColumn, TaskColumnDocument } from './task-column.entity';
 import { TaskColumnsService } from './task-columns.service';
+import { ObjectId } from 'mongoose';
+import { CreateTaskColumnInput } from './inputs/create-task-column.input';
+import { FindTaskColumnsInput } from './inputs/find-task-columns.input';
+import { EditTaskColumnInput } from './inputs/edit-task-column.input';
 
 @Resolver(() => TaskColumn)
 export class TaskColumnsResolver {
   constructor(private readonly taskColumnsService: TaskColumnsService) {}
 
-  //   @Query((returns) => [TaskColumn])
-  @Query((returns) => String)
+  @Query(() => TaskColumn)
   @UseGuards(JwtAuthGuard)
-  async taskColumnsByProject(@Args('input') input: string) {
-    return this.taskColumnsService.taskColumnsByProject(input);
+  async getTaskColumn(@Args('_id', { type: () => String }) _id: ObjectId) {
+    return this.taskColumnsService.taskColumnById(_id);
+  }
+
+  @Query(() => [TaskColumn])
+  @UseGuards(JwtAuthGuard)
+  async getTaskColumns(@Args('input') input: FindTaskColumnsInput) {
+    return this.taskColumnsService.getTaskColumns(input);
+  }
+
+  @Mutation(() => TaskColumn)
+  @UseGuards(JwtAuthGuard)
+  async createTaskColumn(
+    @Args('input') input: CreateTaskColumnInput,
+    @CurrentUser() user: User,
+  ) {
+    return await this.taskColumnsService.createTaskColumn(input, user);
+  }
+
+  @Mutation(() => TaskColumn)
+  @UseGuards(JwtAuthGuard)
+  async editTaskColumn(@Args('input') input: EditTaskColumnInput) {
+    return await this.taskColumnsService.editTaskColumn(input);
+  }
+
+  @ResolveField()
+  async createdBy(
+    @Parent() taskColumn: TaskColumnDocument,
+    @Args('populate') populate: boolean,
+  ) {
+    if (populate)
+      await taskColumn.populate({ path: 'createdBy', model: User.name });
+    return taskColumn.createdBy;
   }
 }

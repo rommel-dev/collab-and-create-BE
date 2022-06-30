@@ -3,38 +3,29 @@ import { User } from 'src/users/user.entity';
 import { CreateProjectInput } from './inputs/create-project.input';
 import { Project } from './project.entity';
 import { ProjectsRepository } from './projects.repository';
-import { Schema as MongooseSchema } from 'mongoose';
-import { FindProjectsInput } from './inputs/find-projects.input';
+import { ObjectId } from 'mongoose';
+import { EditProjectInput } from './inputs/edit-project.input';
 
 @Injectable()
 export class ProjectsService {
   constructor(private readonly projectsRepository: ProjectsRepository) {}
 
-  projectById(_id: MongooseSchema.Types.ObjectId) {
-    return this.projectsRepository.getById(_id);
+  async projectById(_id: ObjectId) {
+    return await this.projectsRepository.getById(_id);
   }
 
-  async projectsByUser(user: User) {
+  async getProjects(user: User) {
     try {
-      const projects = await this.projectsRepository.findProjectsByUser(user);
-      if (!projects) {
+      const confirmedProjects = await this.projectsRepository.find({
+        confirmedMembers: user._id,
+      });
+      const unconfirmedProjects = await this.projectsRepository.find({
+        unconfirmedMembers: user._id,
+      });
+      if (!confirmedProjects && !unconfirmedProjects) {
         throw new Error(`No projects found`);
       }
-      return projects;
-    } catch (err) {
-      throw new Error(err);
-    }
-  }
-
-  async findUnconfirmProjects(user: User) {
-    try {
-      const projects = await this.projectsRepository.findUnconfirmProjects(
-        user,
-      );
-      if (!projects) {
-        throw new Error(`No projects found`);
-      }
-      return projects;
+      return [...confirmedProjects, ...unconfirmedProjects];
     } catch (err) {
       throw new Error(err);
     }
@@ -42,7 +33,9 @@ export class ProjectsService {
 
   async createProject(input: CreateProjectInput, user: User) {
     try {
-      const projects = await this.projectsRepository.findProjectsByUser(user);
+      const projects = await this.projectsRepository.find({
+        confirmedMembers: user._id,
+      });
       const findProject = projects.find(
         (project: Project) => project.projectName === input.projectName,
       );
@@ -50,6 +43,40 @@ export class ProjectsService {
         throw new Error(`Project name already exists`);
       }
       return await this.projectsRepository.save(input, user);
+    } catch (err) {
+      throw new Error(err);
+    }
+  }
+
+  async editProject(input: EditProjectInput, user: User) {
+    try {
+      const project = await this.projectById(input._id);
+      if (!project) {
+        throw new Error(`Unable to find project`);
+      }
+      if (input.inviteAction === 'accept') {
+        return await this.projectsRepository.edit({
+          ...input,
+          confirmedMembers: [...project.confirmedMembers, user._id],
+          unconfirmedMembers: [
+            ...(project.unconfirmedMembers as ObjectId[]).filter(
+              (m: ObjectId) => m != user._id,
+            ),
+          ],
+        });
+      }
+      if (input.inviteAction === 'reject') {
+        return await this.projectsRepository.edit({
+          ...input,
+          rejectedInviteMembers: [...project.rejectedInviteMembers, user._id],
+          unconfirmedMembers: [
+            ...(project.unconfirmedMembers as ObjectId[]).filter(
+              (m: ObjectId) => m != user._id,
+            ),
+          ],
+        });
+      }
+      return await this.projectsRepository.edit(input);
     } catch (err) {
       throw new Error(err);
     }

@@ -1,4 +1,5 @@
-import { InputType, Field, OmitType, PartialType } from '@nestjs/graphql';
+import { InputType, Field } from '@nestjs/graphql';
+import { ObjectId } from 'mongoose';
 
 @InputType()
 export class CreateProjectInput {
@@ -8,9 +9,9 @@ export class CreateProjectInput {
   @Field({ nullable: true })
   description?: string;
 
-  @Field((type) => [String], { nullable: true })
+  @Field(() => [String], { nullable: true })
   techStacks?: string[];
 
-  @Field((type) => [String], { nullable: true })
-  unconfirmMembers?: string[];
+  @Field(() => [String], { nullable: true })
+  unconfirmMembers?: ObjectId[];
 }
