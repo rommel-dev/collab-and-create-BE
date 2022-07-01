@@ -21,6 +21,9 @@ import { TasksService } from './tasks.service';
 export class TasksResolver {
   constructor(private readonly tasksService: TasksService) {}
 
+  //#######################
+  //####### QUERIES #######
+  //#######################
   @Query(() => Task)
   @UseGuards(JwtAuthGuard)
   async getTask(@Args('_id', { type: () => String }) _id: ObjectId) {
@@ -33,6 +36,9 @@ export class TasksResolver {
     return this.tasksService.getTasks(input);
   }
 
+  //#######################
+  //###### MUTATIONS ######
+  //#######################
   @Mutation(() => Task)
   @UseGuards(JwtAuthGuard)
   async createTask(
@@ -48,6 +54,13 @@ export class TasksResolver {
     return await this.tasksService.editTask(input);
   }
 
+  //#######################
+  //#### SUBSCRIPTIONS ####
+  //#######################
+
+  //#######################
+  //###### SUBFIELDS ######
+  //#######################
   @ResolveField()
   async createdBy(
     @Parent() task: TaskDocument,

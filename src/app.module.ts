@@ -11,6 +11,7 @@ import { ProjectsModule } from './projects/projects.module';
 import { TaskColumnsModule } from './task-columns/task-columns.module';
 import { TasksModule } from './tasks/tasks.module';
 import { TeamModule } from './team/team.module';
+import { PubSubModule } from './pub-sub/pub-sub.module';
 
 @Module({
   imports: [
@@ -40,6 +41,7 @@ import { TeamModule } from './team/team.module';
     TaskColumnsModule,
     TasksModule,
     TeamModule,
+    PubSubModule,
   ],
   controllers: [],
   providers: [],

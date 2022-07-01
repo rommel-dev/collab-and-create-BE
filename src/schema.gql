@@ -25,6 +25,7 @@ type TaskColumn {
   columnName: String!
   sequence: Float!
   createdBy(populate: Boolean!): User!
+  projectId: String!
   tasks(populate: Boolean!): [Task!]!
 
   """Created At"""
@@ -193,4 +194,8 @@ input CreateTaskInput {
 input EditTaskInput {
   _id: String!
   description: String
+}
+
+type Subscription {
+  createdTaskColumn(userId: String!): TaskColumn!
 }

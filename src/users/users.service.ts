@@ -10,7 +10,7 @@ import { AuthenticationError, UserInputError } from 'apollo-server-express';
 import { ForgotPasswordInput } from './inputs/forgot-password.input';
 import { MailService } from 'src/mail/mail.service';
 import { User } from './user.entity';
-import { Schema as MongooseSchema, ObjectId } from 'mongoose';
+import { ObjectId } from 'mongoose';
 import { FindUsersInput } from './inputs/find-users.input';
 
 @Injectable()

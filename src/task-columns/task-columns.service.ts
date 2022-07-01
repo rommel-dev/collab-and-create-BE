@@ -44,7 +44,7 @@ export class TaskColumnsService {
       if (!project) throw new Error(`No project found`);
       const sequence = project.taskColumns.length + 1;
       const newTaskColumn = await this.taskColumnsRepository.save(
-        { columnName, sequence },
+        { ...input, sequence },
         user,
       );
       await this.projectsService.editProject(

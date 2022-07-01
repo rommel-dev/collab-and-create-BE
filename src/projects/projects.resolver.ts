@@ -1,4 +1,4 @@
-import { UseGuards } from '@nestjs/common';
+import { Inject, UseGuards } from '@nestjs/common';
 import {
   Args,
   Mutation,
@@ -43,7 +43,8 @@ export class ProjectsResolver {
     @Args('input') input: CreateProjectInput,
     @CurrentUser() user: User,
   ) {
-    return await this.projectsService.createProject(input, user);
+    const newProject = await this.projectsService.createProject(input, user);
+    return newProject;
   }
 
   @Mutation(() => Project)
