@@ -38,13 +38,16 @@ export class TasksService {
   }
 
   async createTask(input: CreateTaskInput, user: User) {
-    const { description, taskColumnId } = input;
+    const { description, inCharge, taskColumnId } = input;
     try {
       const taskColumn = await this.taskColumnsService.taskColumnById(
         taskColumnId,
       );
       if (!taskColumn) throw new Error(`No project found`);
-      const newTask = await this.tasksRepository.save({ description }, user);
+      const newTask = await this.tasksRepository.save(
+        { description, inCharge },
+        user,
+      );
       await this.taskColumnsService.editTaskColumn({
         _id: taskColumn._id,
         tasks: [...taskColumn.tasks, newTask._id],

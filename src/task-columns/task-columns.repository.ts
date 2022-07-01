@@ -20,7 +20,7 @@ export class TaskColumnsRepository {
   }
 
   async find(input: FindTaskColumnsInput) {
-    return await this.taskColumnModel.find(input);
+    return await this.taskColumnModel.find({ _id: { $in: input._ids } });
   }
 
   async save(input: CreateTaskColumnInput, user: User) {

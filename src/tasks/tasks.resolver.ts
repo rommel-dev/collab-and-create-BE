@@ -56,4 +56,13 @@ export class TasksResolver {
     if (populate) await task.populate({ path: 'createdBy', model: User.name });
     return task.createdBy;
   }
+
+  @ResolveField()
+  async inCharge(
+    @Parent() task: TaskDocument,
+    @Args('populate') populate: boolean,
+  ) {
+    if (populate) await task.populate({ path: 'inCharge', model: User.name });
+    return task.inCharge;
+  }
 }

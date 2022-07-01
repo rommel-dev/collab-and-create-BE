@@ -6,6 +6,9 @@ export class CreateTaskInput {
   @Field()
   description: string;
 
+  @Field(() => [String], { nullable: true })
+  inCharge?: ObjectId[];
+
   @Field(() => String, { nullable: true })
   taskColumnId?: ObjectId;
 }

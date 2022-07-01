@@ -22,10 +22,12 @@ export class TaskColumnsService {
     try {
       if (input.projectId) {
         const project = await this.projectsService.projectById(input.projectId);
+
         if (!project) throw new Error(`No project found`);
-        return await this.taskColumnsRepository.find({
+        const taskColumns = await this.taskColumnsRepository.find({
           _ids: [...(project.taskColumns as ObjectId[])],
         });
+        return taskColumns;
       }
       return await this.taskColumnsRepository.find({
         _ids: [...(input._ids as ObjectId[])],

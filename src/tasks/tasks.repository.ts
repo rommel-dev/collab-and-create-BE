@@ -19,7 +19,7 @@ export class TasksRepository {
   }
 
   async find(input: FindTasksInput) {
-    return await this.taskModel.find(input);
+    return await this.taskModel.find({ _id: { $in: input._ids } });
   }
 
   async save(input: CreateTaskInput, user: User) {

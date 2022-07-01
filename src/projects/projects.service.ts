@@ -5,6 +5,7 @@ import { Project } from './project.entity';
 import { ProjectsRepository } from './projects.repository';
 import { ObjectId } from 'mongoose';
 import { EditProjectInput } from './inputs/edit-project.input';
+import { FindProjectsInput } from './inputs/find-projects.input';
 
 @Injectable()
 export class ProjectsService {
@@ -14,9 +15,10 @@ export class ProjectsService {
     return await this.projectsRepository.getById(_id);
   }
 
-  async getProjects(user: User) {
+  async getProjects(input: FindProjectsInput, user: User) {
     try {
       const confirmedProjects = await this.projectsRepository.find({
+        status: input.status,
         confirmedMembers: user._id,
       });
       const unconfirmedProjects = await this.projectsRepository.find({

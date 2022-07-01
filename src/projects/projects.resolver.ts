@@ -16,6 +16,7 @@ import { ProjectsService } from './projects.service';
 import { ObjectId } from 'mongoose';
 import { EditProjectInput } from './inputs/edit-project.input';
 import { TaskColumn } from 'src/task-columns/task-column.entity';
+import { FindProjectsInput } from './inputs/find-projects.input';
 
 @Resolver(() => Project)
 export class ProjectsResolver {
@@ -29,8 +30,11 @@ export class ProjectsResolver {
 
   @Query(() => [Project])
   @UseGuards(JwtAuthGuard)
-  async getProjects(@CurrentUser() user: User) {
-    return this.projectsService.getProjects(user);
+  async getProjects(
+    @Args('input') input: FindProjectsInput,
+    @CurrentUser() user: User,
+  ) {
+    return this.projectsService.getProjects(input, user);
   }
 
   @Mutation(() => Project)

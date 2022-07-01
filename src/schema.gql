@@ -6,7 +6,7 @@ type Task {
   _id: String!
   description: String!
   createdBy(populate: Boolean!): User!
-  inCharge: [User!]!
+  inCharge(populate: Boolean!): [User!]!
 
   """Created At"""
   createdAt: DateTime!
@@ -25,7 +25,7 @@ type TaskColumn {
   columnName: String!
   sequence: Float!
   createdBy(populate: Boolean!): User!
-  tasks: [Task!]!
+  tasks(populate: Boolean!): [Task!]!
 
   """Created At"""
   createdAt: DateTime!
@@ -95,7 +95,7 @@ type Query {
   myInfo: User!
   findUsers(input: FindUsersInput!): [User!]!
   getProject(_id: String!): Project!
-  getProjects: [Project!]!
+  getProjects(input: FindProjectsInput!): [Project!]!
   getTaskColumn(_id: String!): TaskColumn!
   getTaskColumns(input: FindTaskColumnsInput!): [TaskColumn!]!
   getTask(_id: String!): Task!
@@ -109,6 +109,13 @@ input FindUserInput {
 
 input FindUsersInput {
   _ids: [String!]
+}
+
+input FindProjectsInput {
+  _ids: [String!]
+  status: String
+  confirmedMembers: [String!]
+  unconfirmMembers: [String!]
 }
 
 input FindTaskColumnsInput {
@@ -179,6 +186,7 @@ input EditTaskColumnInput {
 
 input CreateTaskInput {
   description: String!
+  inCharge: [String!]
   taskColumnId: String
 }
 

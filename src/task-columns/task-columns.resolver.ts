@@ -16,6 +16,7 @@ import { ObjectId } from 'mongoose';
 import { CreateTaskColumnInput } from './inputs/create-task-column.input';
 import { FindTaskColumnsInput } from './inputs/find-task-columns.input';
 import { EditTaskColumnInput } from './inputs/edit-task-column.input';
+import { Task } from 'src/tasks/task.entity';
 
 @Resolver(() => TaskColumn)
 export class TaskColumnsResolver {
@@ -56,5 +57,15 @@ export class TaskColumnsResolver {
     if (populate)
       await taskColumn.populate({ path: 'createdBy', model: User.name });
     return taskColumn.createdBy;
+  }
+
+  @ResolveField()
+  async tasks(
+    @Parent() taskColumn: TaskColumnDocument,
+    @Args('populate') populate: boolean,
+  ) {
+    if (populate)
+      await taskColumn.populate({ path: 'tasks', model: Task.name });
+    return taskColumn.tasks;
   }
 }
