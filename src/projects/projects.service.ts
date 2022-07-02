@@ -6,10 +6,14 @@ import { ProjectsRepository } from './projects.repository';
 import { ObjectId } from 'mongoose';
 import { EditProjectInput } from './inputs/edit-project.input';
 import { FindProjectsInput } from './inputs/find-projects.input';
+import { NotificationsService } from 'src/notifications/notifications.service';
 
 @Injectable()
 export class ProjectsService {
-  constructor(private readonly projectsRepository: ProjectsRepository) {}
+  constructor(
+    private readonly projectsRepository: ProjectsRepository,
+    private readonly notificationsService: NotificationsService,
+  ) {}
 
   async projectById(_id: ObjectId) {
     return await this.projectsRepository.getById(_id);
@@ -43,7 +47,12 @@ export class ProjectsService {
       if (findProject) {
         throw new Error(`Project name already exists`);
       }
-      return await this.projectsRepository.save(input, user);
+      const newProject = await this.projectsRepository.save(input, user);
+      await this.notificationsService.createNotification({
+        project: newProject._id,
+        notifiedUsers: newProject.unconfirmedMembers,
+      });
+      return newProject;
     } catch (err) {
       throw new Error(err);
     }

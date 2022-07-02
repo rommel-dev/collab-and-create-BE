@@ -13,5 +13,5 @@ export class CreateProjectInput {
   techStacks?: string[];
 
   @Field(() => [String], { nullable: true })
-  unconfirmMembers?: ObjectId[];
+  unconfirmedMembers?: ObjectId[];
 }

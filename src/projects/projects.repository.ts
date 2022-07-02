@@ -13,7 +13,7 @@ export class ProjectsRepository {
   ) {}
 
   async getById(_id: ObjectId) {
-    return this.projectModel.findById(_id).exec();
+    return await this.projectModel.findById(_id).exec();
   }
 
   async find(input: any) {

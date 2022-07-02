@@ -6,6 +6,7 @@ import {
   Query,
   ResolveField,
   Resolver,
+  Subscription,
 } from '@nestjs/graphql';
 import { JwtAuthGuard } from 'src/authentication/jwt-auth.guard';
 import { CurrentUser } from 'src/authentication/user.decorator';
@@ -17,10 +18,16 @@ import { ObjectId } from 'mongoose';
 import { EditProjectInput } from './inputs/edit-project.input';
 import { TaskColumn } from 'src/task-columns/task-column.entity';
 import { FindProjectsInput } from './inputs/find-projects.input';
+import { PubSubEngine } from 'graphql-subscriptions';
+
+const PROJECT_INVITE_RESPONDED = 'projectInviteResponded';
 
 @Resolver(() => Project)
 export class ProjectsResolver {
-  constructor(private readonly projectsService: ProjectsService) {}
+  constructor(
+    private readonly projectsService: ProjectsService,
+    @Inject('PUB_SUB') private pubSub: PubSubEngine,
+  ) {}
 
   //#######################
   //####### QUERIES #######
@@ -47,6 +54,7 @@ export class ProjectsResolver {
     @CurrentUser() user: User,
   ) {
     const newProject = await this.projectsService.createProject(input, user);
+
     return newProject;
   }
 
@@ -56,12 +64,28 @@ export class ProjectsResolver {
     @Args('input') input: EditProjectInput,
     @CurrentUser() user: User,
   ) {
-    return await this.projectsService.editProject(input, user);
+    const project = await this.projectsService.editProject(input, user);
+    await this.pubSub.publish(PROJECT_INVITE_RESPONDED, {
+      projectInviteResponded: project,
+    });
+    return project;
   }
 
   //#######################
   //#### SUBSCRIPTIONS ####
   //#######################
+  @Subscription(() => Project, {
+    name: PROJECT_INVITE_RESPONDED,
+    filter: (payload, variables) => {
+      console.log('PAYLOAD', payload, 'VARIABLES', variables);
+      return payload.projectInviteResponded.confirmedMembers.some(
+        (m: any) => m == variables.userId,
+      );
+    },
+  })
+  projectInviteResponded(@Args('userId') userId: string) {
+    return this.pubSub.asyncIterator(PROJECT_INVITE_RESPONDED);
+  }
 
   //#######################
   //###### SUBFIELDS ######

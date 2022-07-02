@@ -13,5 +13,5 @@ export class FindProjectsInput {
   confirmedMembers?: ObjectId[];
 
   @Field(() => [String], { nullable: true })
-  unconfirmMembers?: ObjectId[];
+  unconfirmedMembers?: ObjectId[];
 }

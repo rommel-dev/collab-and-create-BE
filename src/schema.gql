@@ -91,12 +91,28 @@ type User {
   updatedAt: DateTime!
 }
 
+type Notification {
+  _id: String!
+  notifiedUsers(populate: Boolean!): [User!]!
+  project(populate: Boolean!): Project
+  task(populate: Boolean!): Task
+  status: String
+
+  """Created At"""
+  createdAt: DateTime!
+
+  """Updated At"""
+  updatedAt: DateTime!
+}
+
 type Query {
   myInfo: User!
   findUser(input: FindUserInput!): User!
   findUsers(input: FindUsersInput!): [User!]!
   getProject(_id: String!): Project!
   getProjects: [Project!]!
+  getNotification(_id: String!): Notification!
+  getNotifications: [Notification!]!
   getTaskColumn(_id: String!): TaskColumn!
   getTaskColumns(input: FindTaskColumnsInput!): [TaskColumn!]!
   getTask(_id: String!): Task!
@@ -128,6 +144,7 @@ type Mutation {
   forgotPassword(input: ForgotPasswordInput!): Boolean!
   createProject(input: CreateProjectInput!): Project!
   inviteResponse(input: EditProjectInput!): Project!
+  createNotification(input: CreateNotificationInput!): Notification!
   createTaskColumn(input: CreateTaskColumnInput!): TaskColumn!
   editTaskColumn(input: EditTaskColumnInput!): TaskColumn!
   createTask(input: CreateTaskInput!): Task!
@@ -156,13 +173,20 @@ input CreateProjectInput {
   projectName: String!
   description: String
   techStacks: [String!]
-  unconfirmMembers: [String!]
+  unconfirmedMembers: [String!]
 }
 
 input EditProjectInput {
   _id: String!
   inviteAction: String
   taskColumns: [String!]
+}
+
+input CreateNotificationInput {
+  notifiedUsers: [String!]
+  project: String
+  task: String
+  status: String
 }
 
 input CreateTaskColumnInput {
@@ -190,5 +214,6 @@ input EditTaskInput {
 }
 
 type Subscription {
+  projectInviteResponded(userId: String!): Project!
   createdTaskColumn(userId: String!): TaskColumn!
 }
