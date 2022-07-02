@@ -147,6 +147,7 @@ type Mutation {
   createNotification(input: CreateNotificationInput!): Notification!
   createTaskColumn(input: CreateTaskColumnInput!): TaskColumn!
   editTaskColumn(input: EditTaskColumnInput!): TaskColumn!
+  moveTaskColumn(input: MoveTaskColumnInput!): [TaskColumn!]!
   createTask(input: CreateTaskInput!): Task!
   editTask(input: EditTaskInput!): Task!
 }
@@ -202,6 +203,11 @@ input EditTaskColumnInput {
   tasks: [String!]
 }
 
+input MoveTaskColumnInput {
+  _ids: [String!]!
+  projectId: String!
+}
+
 input CreateTaskInput {
   description: String!
   inCharge: [String!]
@@ -216,4 +222,5 @@ input EditTaskInput {
 type Subscription {
   projectInviteResponded(userId: String!): Project!
   createdTaskColumn(userId: String!): TaskColumn!
+  movedTaskColumn(userId: String!): [TaskColumn!]!
 }

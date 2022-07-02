@@ -21,8 +21,10 @@ import { Task } from 'src/tasks/task.entity';
 import { PUB_SUB } from 'src/pub-sub/pub-sub.module';
 import { RedisPubSub } from 'graphql-redis-subscriptions';
 import { PubSubEngine } from 'graphql-subscriptions';
+import { MoveTaskColumnInput } from './inputs/move-task-column.input';
 
 const CREATED_TASK_COLUMN_EVENT = 'createdTaskColumn';
+const MOVED_TASK_COLUMN_EVENT = 'movedTaskColumn';
 
 @Resolver(() => TaskColumn)
 export class TaskColumnsResolver {
@@ -68,6 +70,16 @@ export class TaskColumnsResolver {
     return await this.taskColumnsService.editTaskColumn(input);
   }
 
+  @Mutation(() => [TaskColumn])
+  @UseGuards(JwtAuthGuard)
+  async moveTaskColumn(@Args('input') input: MoveTaskColumnInput) {
+    const result = await this.taskColumnsService.moveTaskColumn(input);
+    await this.pubSub.publish(MOVED_TASK_COLUMN_EVENT, {
+      movedTaskColumn: result,
+    });
+    return result.movedTaskColumns;
+  }
+
   //#######################
   //#### SUBSCRIPTIONS ####
   //#######################
@@ -84,6 +96,21 @@ export class TaskColumnsResolver {
   })
   createdTaskColumn(@Args('userId') userId: string) {
     return this.pubSub.asyncIterator(CREATED_TASK_COLUMN_EVENT);
+  }
+
+  @Subscription(() => [TaskColumn], {
+    name: MOVED_TASK_COLUMN_EVENT,
+    filter: (payload, variables) => {
+      return payload.movedTaskColumn.confirmedMembers.some(
+        (m: any) => m == variables.userId,
+      );
+    },
+    resolve: (value) => {
+      return value.movedTaskColumn.movedTaskColumns;
+    },
+  })
+  movedTaskColumn(@Args('userId') userId: string) {
+    return this.pubSub.asyncIterator(MOVED_TASK_COLUMN_EVENT);
   }
 
   //#######################

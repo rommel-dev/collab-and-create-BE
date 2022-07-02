@@ -77,7 +77,6 @@ export class ProjectsResolver {
   @Subscription(() => Project, {
     name: PROJECT_INVITE_RESPONDED,
     filter: (payload, variables) => {
-      console.log('PAYLOAD', payload, 'VARIABLES', variables);
       return payload.projectInviteResponded.confirmedMembers.some(
         (m: any) => m == variables.userId,
       );
