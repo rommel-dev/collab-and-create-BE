@@ -22,6 +22,9 @@ import { FindProjectsInput } from './inputs/find-projects.input';
 export class ProjectsResolver {
   constructor(private readonly projectsService: ProjectsService) {}
 
+  //#######################
+  //####### QUERIES #######
+  //#######################
   @Query(() => Project)
   @UseGuards(JwtAuthGuard)
   async getProject(@Args('_id', { type: () => String }) _id: ObjectId) {
@@ -30,13 +33,13 @@ export class ProjectsResolver {
 
   @Query(() => [Project])
   @UseGuards(JwtAuthGuard)
-  async getProjects(
-    @Args('input') input: FindProjectsInput,
-    @CurrentUser() user: User,
-  ) {
-    return this.projectsService.getProjects(input, user);
+  async getProjects(@CurrentUser() user: User) {
+    return this.projectsService.getProjects(user);
   }
 
+  //#######################
+  //###### MUTATIONS ######
+  //#######################
   @Mutation(() => Project)
   @UseGuards(JwtAuthGuard)
   async createProject(
@@ -56,6 +59,13 @@ export class ProjectsResolver {
     return await this.projectsService.editProject(input, user);
   }
 
+  //#######################
+  //#### SUBSCRIPTIONS ####
+  //#######################
+
+  //#######################
+  //###### SUBFIELDS ######
+  //#######################
   @ResolveField()
   async createdBy(
     @Parent() project: ProjectDocument,

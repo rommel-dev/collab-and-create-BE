@@ -55,14 +55,11 @@ export class TaskColumnsResolver {
     @Args('input') input: CreateTaskColumnInput,
     @CurrentUser() user: User,
   ) {
-    const newTaskColumn = await this.taskColumnsService.createTaskColumn(
-      input,
-      user,
-    );
+    const result = await this.taskColumnsService.createTaskColumn(input, user);
     await this.pubSub.publish(CREATED_TASK_COLUMN_EVENT, {
-      createdTaskColumn: newTaskColumn,
+      createdTaskColumn: result,
     });
-    return newTaskColumn;
+    return result.newTaskColumn;
   }
 
   @Mutation(() => TaskColumn)
@@ -74,10 +71,15 @@ export class TaskColumnsResolver {
   //#######################
   //#### SUBSCRIPTIONS ####
   //#######################
-  @Subscription((returns) => TaskColumn, {
+  @Subscription(() => TaskColumn, {
     name: CREATED_TASK_COLUMN_EVENT,
     filter: (payload, variables) => {
-      return payload.createdTaskColumn.createdBy != variables.userId;
+      return payload.createdTaskColumn.confirmedMembers.some(
+        (m: any) => m == variables.userId,
+      );
+    },
+    resolve: (value) => {
+      return value.createdTaskColumn.newTaskColumn;
     },
   })
   createdTaskColumn(@Args('userId') userId: string) {

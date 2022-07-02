@@ -38,7 +38,7 @@ export class TaskColumnsService {
   }
 
   async createTaskColumn(input: CreateTaskColumnInput, user: User) {
-    const { columnName, projectId } = input;
+    const { projectId } = input;
     try {
       const project = await this.projectsService.projectById(projectId);
       if (!project) throw new Error(`No project found`);
@@ -54,7 +54,7 @@ export class TaskColumnsService {
         },
         user,
       );
-      return newTaskColumn;
+      return { newTaskColumn, confirmedMembers: project.confirmedMembers };
     } catch (err) {
       throw new Error(err);
     }

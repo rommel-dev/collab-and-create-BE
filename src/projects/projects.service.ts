@@ -15,10 +15,9 @@ export class ProjectsService {
     return await this.projectsRepository.getById(_id);
   }
 
-  async getProjects(input: FindProjectsInput, user: User) {
+  async getProjects(user: User) {
     try {
       const confirmedProjects = await this.projectsRepository.find({
-        status: input.status,
         confirmedMembers: user._id,
       });
       const unconfirmedProjects = await this.projectsRepository.find({

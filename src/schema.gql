@@ -92,11 +92,11 @@ type User {
 }
 
 type Query {
-  findUser(input: FindUserInput!): User!
   myInfo: User!
+  findUser(input: FindUserInput!): User!
   findUsers(input: FindUsersInput!): [User!]!
   getProject(_id: String!): Project!
-  getProjects(input: FindProjectsInput!): [Project!]!
+  getProjects: [Project!]!
   getTaskColumn(_id: String!): TaskColumn!
   getTaskColumns(input: FindTaskColumnsInput!): [TaskColumn!]!
   getTask(_id: String!): Task!
@@ -110,13 +110,6 @@ input FindUserInput {
 
 input FindUsersInput {
   _ids: [String!]
-}
-
-input FindProjectsInput {
-  _ids: [String!]
-  status: String
-  confirmedMembers: [String!]
-  unconfirmMembers: [String!]
 }
 
 input FindTaskColumnsInput {

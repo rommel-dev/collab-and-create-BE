@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
-import { ObjectId } from 'mongoose';
-import { TaskColumnsService } from 'src/task-columns/task-columns.service';
 import { User } from 'src/users/user.entity';
 import { CreateTaskInput } from './inputs/create-task.input';
 import { EditTaskInput } from './inputs/edit-task.input';
 import { FindTasksInput } from './inputs/find-tasks.input';
 import { TasksRepository } from './tasks.repository';
+import { TaskColumnsService } from 'src/task-columns/task-columns.service';
+import { ObjectId } from 'mongoose';
 
 @Injectable()
 export class TasksService {
